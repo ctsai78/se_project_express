@@ -1,23 +1,19 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const clothingItem = new mongoose.Schema({
+const user = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  weather: {
-    type: String,
-    required: true,
-  },
-  imageURL: {
+  avatar: {
     type: String,
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: "Clothing link is not valid",
+      message: "Avatar link is not valid",
     },
   },
 });
 
-module.exports = mongoose.model("clothingItems", clothingItem);
+module.exports = mongoose.model("user", user);
