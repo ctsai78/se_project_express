@@ -1,10 +1,10 @@
-const clothingItem = require("../models/clothingItem");
 const ClothingItem = require("../models/clothingItem");
 
 //Create
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
+  console.log(req.user._id);
 
   const { name, weather, imageURL } = req.body;
 
@@ -53,4 +53,27 @@ const deleteItem = (req, res) => {
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+// Like Item
+const likeItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
+    { new: true },
+  );
+
+// Dislike Item
+const dislikeItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } }, // remove _id from the array
+    { new: true },
+  );
+
+module.exports = {
+  createItem,
+  getItems,
+  updateItem,
+  deleteItem,
+  likeItem,
+  dislikeItem,
+};

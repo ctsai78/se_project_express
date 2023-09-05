@@ -1,19 +1,14 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+const router = require("express").Router();
 
-const user = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  avatar: {
-    type: String,
-    required: true,
-    validate: {
-      validator: (v) => validator.isURL(v),
-      message: "Avatar link is not valid",
-    },
-  },
-});
+const { getUsers, getUser, createUser } = require("../controllers/users");
 
-module.exports = mongoose.model("user", user);
+// GET /users — returns all users
+router.get("/", getUsers);
+
+// GET /users/:userId - returns a user by _id
+router.get("/:userId", getUser);
+
+// POST /users — creates a new user
+router.post("/", createUser);
+
+module.exports = router;

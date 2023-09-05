@@ -13,6 +13,14 @@ mongoose
   });
 
 const routes = require("./routes");
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: "64f651a9851c60f1738aa16a",
+  };
+  next();
+});
+
 app.use(express.json());
 app.use(routes);
 

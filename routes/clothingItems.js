@@ -5,7 +5,9 @@ const {
   getItems,
   updateItem,
   deleteItem,
-} = require("../controllers/clothingItem");
+  likeItem,
+  dislikeItem,
+} = require("../controllers/clothingItems");
 
 // CRUD
 
@@ -20,5 +22,11 @@ router.put("/:itemId", updateItem);
 
 // Delete
 router.delete("/:itemId", deleteItem);
+
+//Like
+router.put("/:itemId", likeItem);
+
+//Dislike
+router.put("/:itemId", dislikeItem);
 
 module.exports = router;
