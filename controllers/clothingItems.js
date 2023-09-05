@@ -14,7 +14,7 @@ const createItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((e) => {
-      res.status(500).send({ message: "Error from createItem", e });
+      res.status(400).send({ message: "Error from createItem", e });
     });
 };
 
@@ -49,7 +49,7 @@ const deleteItem = (req, res) => {
     .orFail()
     .then((item) => res.status(204).send({}))
     .catch((e) => {
-      res.status(500).send({ message: "Error from deleteItem", e });
+      res.status(400).send({ message: "Error from deleteItem", e });
     });
 };
 
@@ -59,7 +59,12 @@ const likeItem = (req, res) =>
     req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true },
-  );
+  )
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      res.status(400).send({ message: "Error from likeItem", e });
+    });
 
 // Dislike Item
 const dislikeItem = (req, res) =>
@@ -67,7 +72,12 @@ const dislikeItem = (req, res) =>
     req.params.itemId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
-  );
+  )
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      res.status(404).send({ message: "Error from dislikeItem", e });
+    });
 
 module.exports = {
   createItem,
