@@ -47,7 +47,7 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then(() => res.status(204).send({}))
+    .then(() => res.status(200).send({}))
     .catch((e) => {
       res.status(400).send({ message: "Error from deleteItem", e });
     });
@@ -60,8 +60,11 @@ const likeItem = (req, res) =>
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true },
   )
-    .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .orFail((e) => {
+      res.status(404).send({ message: "No item found with that id", e });
+      throw error;
+    })
+    .then((item) => res.status(500).send({ data: item }))
     .catch((e) => {
       res.status(400).send({ message: "Error from likeItem", e });
     });
@@ -73,7 +76,10 @@ const dislikeItem = (req, res) =>
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
   )
-    .orFail()
+    .orFail((e) => {
+      res.status(404).send({ message: "No item found with that id", e });
+      throw error;
+    })
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       res.status(404).send({ message: "Error from dislikeItem", e });
