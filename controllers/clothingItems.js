@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 
-//Create
+// Create
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
@@ -47,7 +47,7 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(204).send({}))
+    .then(() => res.status(204).send({}))
     .catch((e) => {
       res.status(400).send({ message: "Error from deleteItem", e });
     });

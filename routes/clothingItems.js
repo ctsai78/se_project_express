@@ -11,7 +11,7 @@ const {
 
 // CRUD
 
-//Create
+// Create
 router.post("/", createItem);
 
 // Read
@@ -23,10 +23,10 @@ router.put("/:itemId", updateItem);
 // Delete
 router.delete("/:itemId", deleteItem);
 
-//Like
-router.put("/:itemId", likeItem);
+// Like
+router.put("/:itemId/likes", likeItem);
 
-//Dislike
-router.put("/:itemId", dislikeItem);
+// Dislike
+router.delete("/:itemId/likes", dislikeItem);
 
 module.exports = router;
