@@ -1,11 +1,12 @@
 const Users = require("../models/user");
+const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 
 // GET /users — returns all users
 const getUsers = (req, res) => {
   Users.find({})
     .then((users) => res.status(200).send(users))
     .catch((e) => {
-      res.status(500).send({ message: "Error from getUsers", e });
+      res.status(DEFAULT).send({ message: "Error from getUsers" });
     });
 };
 
@@ -14,13 +15,16 @@ const getUser = (req, res) => {
   const { userId } = req.params;
 
   Users.findById(userId)
-    .orFail((e) => {
-      res.status(404).send({ message: "No user found with that id", e });
-      throw error;
-    })
+    .orFail()
     .then((user) => res.status(200).send(user))
     .catch((e) => {
-      res.status(400).send({ message: "Error from getUser", e });
+      if (e.name === "DocumentNotFoundError") {
+        res.status(NOT_FOUND).send({ message: "Error from getUser" });
+      } else if (e.name === "CastError") {
+        res.status(BAD_REQUEST).send({ message: "Error from getUser" });
+      } else {
+        res.status(DEFAULT);
+      }
     });
 };
 
@@ -37,7 +41,11 @@ const createUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((e) => {
-      res.status(400).send({ message: "Error from createUser", e });
+      if (e.name === "ValidationError") {
+        res.status(BAD_REQUEST).send({ message: "Error from createUser" });
+      } else {
+        res.status(DEFAULT);
+      }
     });
 };
 
