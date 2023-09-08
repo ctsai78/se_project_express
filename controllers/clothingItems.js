@@ -11,14 +11,15 @@ const createItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
-      console.log(item);
-      res.send({ data: item });
+      res.status(200).send({ data: item });
     })
     .catch((e) => {
       if (e.name === "ValidationError") {
         res.status(BAD_REQUEST).send({ message: "Error from createItem" });
       } else {
-        res.status(DEFAULT);
+        res
+          .status(DEFAULT)
+          .send({ message: "An error has occurred on the server." });
       }
     });
 };
@@ -28,7 +29,9 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((e) => {
-      res.status(DEFAULT).send({ message: "Error from getItems" });
+      res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -39,14 +42,16 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then(() => res.status(200).send({}))
+    .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
         res.status(NOT_FOUND).send({ message: "Error from deleteItem" });
       } else if (e.name === "CastError") {
         res.status(BAD_REQUEST).send({ message: "Error from deleteItem" });
       } else {
-        res.status(DEFAULT);
+        res
+          .status(DEFAULT)
+          .send({ message: "An error has occurred on the server." });
       }
     });
 };
@@ -59,14 +64,16 @@ const likeItem = (req, res) =>
     { new: true },
   )
     .orFail()
-    .then((item) => res.status(500).send({ data: item }))
+    .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
         res.status(NOT_FOUND).send({ message: "Error from getUser" });
       } else if (e.name === "CastError") {
         res.status(BAD_REQUEST).send({ message: "Error from getUser" });
       } else {
-        res.status(DEFAULT);
+        res
+          .status(DEFAULT)
+          .send({ message: "An error has occurred on the server." });
       }
     });
 
@@ -85,7 +92,9 @@ const dislikeItem = (req, res) =>
       } else if (e.name === "CastError") {
         res.status(BAD_REQUEST).send({ message: "Error from getUser" });
       } else {
-        res.status(DEFAULT);
+        res
+          .status(DEFAULT)
+          .send({ message: "An error has occurred on the server." });
       }
     });
 

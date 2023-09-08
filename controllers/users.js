@@ -5,7 +5,7 @@ const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 const getUsers = (req, res) => {
   Users.find({})
     .then((users) => res.status(200).send(users))
-    .catch((e) => {
+    .catch(() => {
       res.status(DEFAULT).send({ message: "Error from getUsers" });
     });
 };
@@ -23,7 +23,9 @@ const getUser = (req, res) => {
       } else if (e.name === "CastError") {
         res.status(BAD_REQUEST).send({ message: "Error from getUser" });
       } else {
-        res.status(DEFAULT);
+        res
+          .status(DEFAULT)
+          .send({ message: "An error has occurred on the server." });
       }
     });
 };
@@ -37,14 +39,15 @@ const createUser = (req, res) => {
 
   Users.create({ name, avatar })
     .then((user) => {
-      console.log(user);
-      res.send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((e) => {
       if (e.name === "ValidationError") {
         res.status(BAD_REQUEST).send({ message: "Error from createUser" });
       } else {
-        res.status(DEFAULT);
+        res
+          .status(DEFAULT)
+          .send({ message: "An error has occurred on the server." });
       }
     });
 };
