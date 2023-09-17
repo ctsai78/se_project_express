@@ -1,4 +1,13 @@
 const router = require("express").Router();
+const { getCurrentUser, updateUser } = require("../controllers/users");
+
+// GET /users/me — returns logged-in user
+router.get("/me/:userId", getCurrentUser);
+
+// PATCH /users/me — update profile
+router.patch("/me/:userId", updateUser);
+
+module.exports = router;
 
 /* -------------------------------- NOT USED -------------------------------- */
 // const { getUsers, getUser, createUser } = require("../controllers/users");
@@ -11,5 +20,3 @@ const router = require("express").Router();
 
 // POST /users — creates a new user
 // router.post("/", createUser);
-
-module.exports = router;
