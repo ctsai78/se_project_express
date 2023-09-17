@@ -1,5 +1,12 @@
+const jwt = require("jsonwebtoken");
+const { SECRET_KEY } = require("../utils/config");
 const Users = require("../models/user");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  DEFAULT,
+  DUPLICATE_ERROR,
+} = require("../utils/errors");
 
 // GET /users — returns all users
 const getUsers = (req, res) => {
@@ -35,15 +42,20 @@ const createUser = (req, res) => {
   console.log(req);
   console.log(req.body);
 
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  Users.create({ name, avatar })
+  Users.create({ name, avatar, email, password })
     .then((user) => {
       res.status(200).send({ data: user });
     })
+    .throw((e) => {})
     .catch((e) => {
       if (e.name === "ValidationError") {
         res.status(BAD_REQUEST).send({ message: "Error from createUser" });
+      } else if (e.code === 11000) {
+        res
+          .status(DUPLICATE_ERROR)
+          .send({ message: "An existing user created." });
       } else {
         res
           .status(DEFAULT)
@@ -52,4 +64,18 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, getUser, createUser };
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
+        expiresIn: "7d",
+      });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+};
+
+module.exports = { getUsers, getUser, createUser, login };

@@ -1,9 +1,11 @@
 const BAD_REQUEST = 400;
 const NOT_FOUND = 404;
 const DEFAULT = 500;
+const DUPLICATE_ERROR = 11000;
 
 module.exports = {
   BAD_REQUEST,
   NOT_FOUND,
   DEFAULT,
+  DUPLICATE_ERROR,
 };

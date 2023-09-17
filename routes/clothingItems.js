@@ -1,5 +1,5 @@
 const router = require("express").Router();
-
+const auth = require("../middlewares/auth");
 const {
   createItem,
   getItems,
@@ -11,21 +11,23 @@ const {
 // CRUD
 
 // Create
-router.post("/", createItem);
+router.post("/", auth, createItem);
 
 // Read
 router.get("/", getItems);
 
-// // Update
-// router.put("/:itemId", updateItem);
-
 // Delete
-router.delete("/:itemId", deleteItem);
+router.delete("/:itemId", auth, deleteItem);
 
 // Like
-router.put("/:itemId/likes", likeItem);
+router.put("/:itemId/likes", auth, likeItem);
 
 // Dislike
-router.delete("/:itemId/likes", dislikeItem);
+router.delete("/:itemId/likes", auth, dislikeItem);
 
 module.exports = router;
+
+/* -------------------------------- NOT USED -------------------------------- */
+
+// // Update
+// router.put("/:itemId", updateItem);
