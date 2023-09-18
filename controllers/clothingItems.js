@@ -1,5 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  NOT_OWNER,
+  DEFAULT,
+} = require("../utils/errors");
 
 // Create
 const createItem = (req, res) => {
@@ -46,7 +51,7 @@ const deleteItem = (req, res) => {
       if (item.owner === userid) {
         res.status(200).send({ data: item });
       } else {
-        res.status(401).send({ message: "user doesn't own the item" });
+        res.status(NOT_OWNER).send({ message: "user doesn't own the item" });
       }
     })
     .catch((e) => {

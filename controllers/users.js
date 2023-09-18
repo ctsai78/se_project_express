@@ -5,7 +5,7 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   DEFAULT,
-  DUPLICATE_ERROR,
+  DUPLICATE_EMAIL,
 } = require("../utils/errors");
 
 // GET /users/:userId - returns logged-in user by _id
@@ -70,8 +70,8 @@ const createUser = (req, res) => {
         res.status(BAD_REQUEST).send({ message: "Error from createUser" });
       } else if (e.code === 11000) {
         res
-          .status(DUPLICATE_ERROR)
-          .send({ message: "An existing user created." });
+          .status(DUPLICATE_EMAIL)
+          .send({ message: "An existing user already created." });
       } else {
         res
           .status(DEFAULT)
