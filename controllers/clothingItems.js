@@ -42,7 +42,13 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((item) => {
+      if (item.owner === userid) {
+        res.status(200).send({ data: item });
+      } else {
+        res.status(401).send({ message: "user doesn't own the item" });
+      }
+    })
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
         res.status(NOT_FOUND).send({ message: "Error from deleteItem" });

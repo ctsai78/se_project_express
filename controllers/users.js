@@ -31,15 +31,20 @@ const getCurrentUser = (req, res) => {
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
   const { userId } = req.params;
+  const { name, avatar } = req.body;
 
-  Users.findById(userId)
+  Users.findByIdAndUpdate(
+    userId,
+    { $set: { name, avatar } },
+    { new: true, runValidators: true },
+  )
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND).send({ message: "Error from getUser" });
+        res.status(NOT_FOUND).send({ message: "Error from updateUser" });
       } else if (e.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Error from getUser" });
+        res.status(BAD_REQUEST).send({ message: "Error from updateUser" });
       } else {
         res
           .status(DEFAULT)
