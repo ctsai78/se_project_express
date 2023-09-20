@@ -48,7 +48,7 @@ const deleteItem = (req, res) => {
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) => {
-      if (item.owner === userid) {
+      if (item.owner === req.user._id) {
         res.status(200).send({ data: item });
       } else {
         res.status(NOT_OWNER).send({ message: "user doesn't own the item" });

@@ -5,7 +5,7 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   DEFAULT,
-  DUPLICATE_EMAIL,
+  NOT_AUTHORIZED,
 } = require("../utils/errors");
 
 // GET /users/:userId - returns logged-in user by _id
@@ -55,24 +55,19 @@ const updateUser = (req, res) => {
 
 // POST /users — creates a new user
 const createUser = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-
   const { name, avatar, email, password } = req.body;
 
   Users.create({ name, avatar, email, password })
     .then((user) => {
       res.status(200).send({ data: user });
     })
-    .throw((e) => {})
+
     .catch((e) => {
       if (e.name === "ValidationError") {
         res.status(BAD_REQUEST).send({ message: "Error from createUser" });
-      } else if (e.code === 11000) {
-        res
-          .status(DUPLICATE_EMAIL)
-          .send({ message: "An existing user already created." });
-      } else {
+      } else if (e.code === 11000)
+        throw new Error("An existing user already created.");
+      else {
         res
           .status(DEFAULT)
           .send({ message: "An error has occurred on the server." });
@@ -83,14 +78,15 @@ const createUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  return Users.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
         expiresIn: "7d",
       });
+      res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      res.status(NOT_AUTHORIZED).send({ message: err.message });
     });
 };
 
