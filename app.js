@@ -1,5 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const routes = require("./routes");
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -13,11 +15,9 @@ mongoose
     console.log("DB error", e);
   });
 
-const routes = require("./routes");
-
 app.use(express.json());
 app.use(routes);
-
+app.use(cors());
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
   console.log("This is working");

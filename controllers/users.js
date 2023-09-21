@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const { SECRET_KEY } = require("../utils/config");
 const Users = require("../models/user");
 const {
@@ -6,6 +7,7 @@ const {
   NOT_FOUND,
   DEFAULT,
   NOT_AUTHORIZED,
+  DUPLICATE_EMAIL,
 } = require("../utils/errors");
 
 // GET /users/:userId - returns logged-in user by _id
@@ -57,21 +59,32 @@ const updateUser = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  Users.create({ name, avatar, email, password })
+  if (!email || !password) {
+    res.status(BAD_REQUEST).send({ message: "Error from createUser" });
+  }
+  Users.findOne({ email })
     .then((user) => {
-      res.status(200).send({ data: user });
-    })
-
-    .catch((e) => {
-      if (e.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({ message: "Error from createUser" });
-      } else if (e.code === 11000)
-        throw new Error("An existing user already created.");
-      else {
-        res
-          .status(DEFAULT)
-          .send({ message: "An error has occurred on the server." });
+      if (user) {
+        res.status(DUPLICATE_EMAIL).send({ message: "Email alreay used" });
       }
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => {
+      return Users.create({ name, avatar, email, password: hash })
+        .then((user) => {
+          res.status(200).send({
+            data: { name: user.name, email: user.email, avatar: user.avatar },
+          });
+        })
+        .catch((e) => {
+          if (e.name === "ValidationError") {
+            res.status(BAD_REQUEST).send({ message: "Error from createUser" });
+          } else {
+            res
+              .status(DEFAULT)
+              .send({ message: "An error has occurred on the server." });
+          }
+        });
     });
 };
 
