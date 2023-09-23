@@ -65,26 +65,36 @@ const createUser = (req, res) => {
   Users.findOne({ email })
     .then((user) => {
       if (user) {
-        res.status(DUPLICATE_EMAIL).send({ message: "Email alreay used" });
+        res.status(DUPLICATE_EMAIL).send({ message: "Email already exist" });
       }
-      return bcrypt.hash(password, 10);
+      return bcrypt.hash(password, 10).then((hash) =>
+        Users.create({ name, avatar, email, password: hash })
+          .then((newUser) => {
+            res.status(200).send({
+              data: {
+                name: newUser.name,
+                email: newUser.email,
+                avatar: newUser.avatar,
+              },
+            });
+          })
+          .catch((e) => {
+            if (e.name === "ValidationError") {
+              res
+                .status(BAD_REQUEST)
+                .send({ message: "Error from createUser" });
+            } else {
+              res
+                .status(DEFAULT)
+                .send({ message: "An error has occurred on the server." });
+            }
+          }),
+      );
     })
-    .then((hash) => {
-      return Users.create({ name, avatar, email, password: hash })
-        .then((user) => {
-          res.status(200).send({
-            data: { name: user.name, email: user.email, avatar: user.avatar },
-          });
-        })
-        .catch((e) => {
-          if (e.name === "ValidationError") {
-            res.status(BAD_REQUEST).send({ message: "Error from createUser" });
-          } else {
-            res
-              .status(DEFAULT)
-              .send({ message: "An error has occurred on the server." });
-          }
-        });
+    .catch(() => {
+      res
+        .status(DEFAULT)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 

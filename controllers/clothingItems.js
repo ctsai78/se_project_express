@@ -45,14 +45,15 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
-      if (item.owner === req.user._id) {
-        res.status(200).send({ data: item });
-      } else {
-        res.status(NOT_OWNER).send({ message: "user doesn't own the item" });
+      if (String(item.owner) !== req.user._id) {
+        return res
+          .status(ERRORS.FORBIDDEN)
+          .send({ message: "You are not authorized to delete this item" });
       }
+      return item.deleteOne().then(() => res.send({ message: "Item deleted" }));
     })
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
