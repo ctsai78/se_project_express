@@ -12,7 +12,7 @@ const {
 
 // GET /users/:userId - returns logged-in user by _id
 const getCurrentUser = (req, res) => {
-  const { userId } = req.params;
+  const { userId } = req.user._id;
 
   Users.findById(userId)
     .orFail()
@@ -32,7 +32,7 @@ const getCurrentUser = (req, res) => {
 
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
-  const { userId } = req.params;
+  const { userId } = req.user._id;
   const { name, avatar } = req.body;
 
   Users.findByIdAndUpdate(
@@ -65,7 +65,9 @@ const createUser = (req, res) => {
   Users.findOne({ email })
     .then((user) => {
       if (user) {
-        res.status(DUPLICATE_EMAIL).send({ message: "Email already exist" });
+        return res
+          .status(DUPLICATE_EMAIL)
+          .send({ message: "Email already exist" });
       }
       return bcrypt.hash(password, 10).then((hash) =>
         Users.create({ name, avatar, email, password: hash })
