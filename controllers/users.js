@@ -12,7 +12,7 @@ const {
 
 // GET /users/:userId - returns logged-in user by _id
 const getCurrentUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
 
   Users.findById(userId)
     .orFail()
@@ -32,7 +32,7 @@ const getCurrentUser = (req, res) => {
 
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId = req.user._id;
   const { name, avatar } = req.body;
 
   Users.findByIdAndUpdate(
