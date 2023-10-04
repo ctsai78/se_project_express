@@ -13,7 +13,6 @@ const {
 // GET /users/:userId - returns logged-in user by _id
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
-
   Users.findById(userId)
     .orFail()
     .then((user) => res.status(200).send(user))
@@ -57,7 +56,7 @@ const updateUser = (req, res) => {
 
 // POST /users — creates a new user
 const createUser = (req, res) => {
-  const { name, avatar, email, password } = req.body;
+  const { name, avatarUrl, email, password } = req.body;
 
   if (!email || !password) {
     res.status(BAD_REQUEST).send({ message: "Error from createUser" });
@@ -70,17 +69,18 @@ const createUser = (req, res) => {
           .send({ message: "Email already exist" });
       }
       return bcrypt.hash(password, 10).then((hash) =>
-        Users.create({ name, avatar, email, password: hash })
+        Users.create({ name, avatarUrl, email, password: hash })
           .then((newUser) => {
             res.status(200).send({
               data: {
                 name: newUser.name,
                 email: newUser.email,
-                avatar: newUser.avatar,
+                avatarUrl: newUser.avatarUrl,
               },
             });
           })
           .catch((e) => {
+            console.error(e);
             if (e.name === "ValidationError") {
               res
                 .status(BAD_REQUEST)
@@ -100,6 +100,7 @@ const createUser = (req, res) => {
     });
 };
 
+// POST /users — signin user
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -108,7 +109,7 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
         expiresIn: "7d",
       });
-      res.send({ token });
+      res.send({ user, token });
     })
     .catch((err) => {
       res.status(NOT_AUTHORIZED).send({ message: err.message });
