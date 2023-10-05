@@ -32,7 +32,9 @@ const getCurrentUser = (req, res) => {
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
   const userId = req._id;
-  const { name, avatarUrl } = req.body;
+  // const { name, avatarUrl } = req.body;
+  const name = req.name;
+  const avatarUrl = req.avatarUrl;
 
   Users.findByIdAndUpdate(
     userId,
