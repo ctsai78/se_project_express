@@ -31,12 +31,12 @@ const getCurrentUser = (req, res) => {
 
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
-  const userId = req.user._id;
-  const { name, avatar } = req.body;
+  const userId = req._id;
+  const { name, avatarUrl } = req.body;
 
   Users.findByIdAndUpdate(
     userId,
-    { $set: { name, avatar } },
+    { $set: { name, avatarUrl } },
     { new: true, runValidators: true },
   )
     .orFail()
@@ -71,12 +71,16 @@ const createUser = (req, res) => {
       return bcrypt.hash(password, 10).then((hash) =>
         Users.create({ name, avatarUrl, email, password: hash })
           .then((newUser) => {
+            const token = jwt.sign({ _id: newUser._id }, SECRET_KEY, {
+              expiresIn: "7d",
+            });
             res.status(200).send({
               data: {
                 name: newUser.name,
                 email: newUser.email,
                 avatarUrl: newUser.avatarUrl,
               },
+              token,
             });
           })
           .catch((e) => {
