@@ -31,10 +31,8 @@ const getCurrentUser = (req, res) => {
 
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
-  const userId = req._id;
-  const name = req.name;
-  const avatarUrl = req.avatarUrl;
-
+  const { name, avatarUrl } = req.body;
+  const userId = req.user._id;
   Users.findByIdAndUpdate(
     userId,
     { $set: { name, avatarUrl } },
