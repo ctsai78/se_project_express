@@ -9,7 +9,7 @@ const user = new mongoose.Schema({
     minLength: 2,
     maxLength: 30,
   },
-  avatarUrl: {
+  avatar: {
     type: String,
     required: true,
     validate: {

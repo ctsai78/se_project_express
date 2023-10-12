@@ -31,11 +31,11 @@ const getCurrentUser = (req, res) => {
 
 // PATCH /users/:userId - update user data
 const updateUser = (req, res) => {
-  const { name, avatarUrl } = req.body;
+  const { name, avatar } = req.body;
   const userId = req.user._id;
   Users.findByIdAndUpdate(
     userId,
-    { $set: { name, avatarUrl } },
+    { $set: { name, avatar } },
     { new: true, runValidators: true },
   )
     .orFail()
@@ -55,7 +55,7 @@ const updateUser = (req, res) => {
 
 // POST /users — creates a new user
 const createUser = (req, res) => {
-  const { name, avatarUrl, email, password } = req.body;
+  const { name, avatar, email, password } = req.body;
 
   if (!email || !password) {
     res.status(BAD_REQUEST).send({ message: "Error from createUser" });
@@ -68,7 +68,7 @@ const createUser = (req, res) => {
           .send({ message: "Email already exist" });
       }
       return bcrypt.hash(password, 10).then((hash) =>
-        Users.create({ name, avatarUrl, email, password: hash })
+        Users.create({ name, avatar, email, password: hash })
           .then((newUser) => {
             const token = jwt.sign({ _id: newUser._id }, SECRET_KEY, {
               expiresIn: "7d",
@@ -77,7 +77,7 @@ const createUser = (req, res) => {
               data: {
                 name: newUser.name,
                 email: newUser.email,
-                avatarUrl: newUser.avatarUrl,
+                avatar: newUser.avatar,
               },
               token,
             });
