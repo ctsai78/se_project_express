@@ -22,7 +22,7 @@ const createItem = (req, res, next) => {
         next(new BadRequestError("Error from createItem"));
       } else {
         res
-          .status(DEFAULT)
+          .status(500)
           .send({ message: "An error has occurred on the server." });
       }
     });
