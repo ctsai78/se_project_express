@@ -8,6 +8,7 @@ const {
 
 const NotFoundError = require("../errors/not-found-err");
 const BadRequestError = require("../errors/bad-request-error");
+const ForbiddenError = require("../errors/forbidden-error");
 
 // Create
 const createItem = (req, res, next) => {
@@ -21,21 +22,17 @@ const createItem = (req, res, next) => {
       if (e.name === "ValidationError") {
         next(new BadRequestError("Error from createItem"));
       } else {
-        res
-          .status(500)
-          .send({ message: "An error has occurred on the server." });
+        next(e);
       }
     });
 };
 
 // Read
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
-    .catch(() => {
-      res
-        .status(DEFAULT)
-        .send({ message: "An error has occurred on the server." });
+    .catch((e) => {
+      next(e);
     });
 };
 
@@ -48,9 +45,7 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (String(item.owner) !== req.user._id) {
-        return res
-          .status(NOT_OWNER)
-          .send({ message: "You are not authorized to delete this item" });
+        next(new ForbiddenError("You are not authorized to delete this item"));
       }
       return item.deleteOne().then(() => res.send({ message: "Item deleted" }));
     })
@@ -58,17 +53,15 @@ const deleteItem = (req, res, next) => {
       if (e.name === "DocumentNotFoundError") {
         next(new NotFoundError("Error from deleteItem"));
       } else if (e.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Error from deleteItem" });
+        next(new BadRequestError("Error from deleteIte"));
       } else {
-        res
-          .status(DEFAULT)
-          .send({ message: "An error has occurred on the server." });
+        next(e);
       }
     });
 };
 
 // Like Item
-const likeItem = (req, res) =>
+const likeItem = (req, res, next) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
@@ -78,18 +71,16 @@ const likeItem = (req, res) =>
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND).send({ message: "Error from getUser" });
+        next(new NotFoundError("Error from likeItem"));
       } else if (e.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Error from getUser" });
+        next(new BadRequestError("Error from likeItem"));
       } else {
-        res
-          .status(DEFAULT)
-          .send({ message: "An error has occurred on the server." });
+        next(e);
       }
     });
 
 // Dislike Item
-const dislikeItem = (req, res) =>
+const dislikeItem = (req, res, next) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
@@ -99,13 +90,11 @@ const dislikeItem = (req, res) =>
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
       if (e.name === "DocumentNotFoundError") {
-        res.status(NOT_FOUND).send({ message: "Error from getUser" });
+        next(new NotFoundError("Error from dislikeItem"));
       } else if (e.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Error from getUser" });
+        next(new BadRequestError("Error from dislikeItem"));
       } else {
-        res
-          .status(DEFAULT)
-          .send({ message: "An error has occurred on the server." });
+        next(e);
       }
     });
 
