@@ -11,3 +11,9 @@ MongoDB compass. Postman helped us inspect each API
 we set up and MongoDB compass visualized the database so that it
 is more easier for us to see whether the data is sent to the database
 correctly.
+
+### Domain name
+
+api.wtwr-ctsai78.chickenkiller.com
+wtwr-ctsai78.chickenkiller.com
+www.wtwr-ctsai78.chickenkiller.com
