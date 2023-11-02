@@ -1,14 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { SECRET_KEY } = require("../utils/config");
+// const { SECRET_KEY } = require("../utils/config");
+const { SECRET_KEY } = require("dotenv").config;
+
 const Users = require("../models/user");
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  DEFAULT,
-  NOT_AUTHORIZED,
-  DUPLICATE_EMAIL,
-} = require("../utils/errors");
 
 const NotFoundError = require("../errors/not-found-err");
 const BadRequestError = require("../errors/bad-request-error");
