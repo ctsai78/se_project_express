@@ -64,9 +64,13 @@ const createUser = (req, res, next) => {
       return bcrypt.hash(password, 10).then((hash) =>
         Users.create({ name, avatar, email, password: hash })
           .then((newUser) => {
-            const token = jwt.sign({ _id: newUser._id }, SECRET_KEY, {
-              expiresIn: "7d",
-            });
+            const token = jwt.sign(
+              { _id: newUser._id },
+              process.env.SECRET_KEY,
+              {
+                expiresIn: "7d",
+              },
+            );
             res.status(200).send({
               data: {
                 name: newUser.name,
@@ -97,7 +101,7 @@ const login = (req, res, next) => {
 
   return Users.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
+      const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY, {
         expiresIn: "7d",
       });
       res.send({ user, token });
