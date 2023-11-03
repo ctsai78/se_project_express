@@ -5,6 +5,8 @@ const SECRET_KEY = require("../utils/config");
 
 const Users = require("../models/user");
 
+console.log(SECRET_KEY);
+
 const NotFoundError = require("../errors/not-found-err");
 const BadRequestError = require("../errors/bad-request-error");
 const UnauthorizedError = require("../errors/unauthorized-error");
