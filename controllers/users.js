@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { JWT_SECRET } = process.env;
 const Users = require("../models/user");
 
+const { JWT_SECRET = "dev-key" } = process.env;
 const NotFoundError = require("../errors/not-found-err");
 const BadRequestError = require("../errors/bad-request-error");
 const UnauthorizedError = require("../errors/unauthorized-error");
